@@ -1,0 +1,18 @@
+version: 2.1
+orbs:
+    # 2.10.X is actually 2.10.1 since we needed a patch here
+    provar: provartesting/provar@2.10.7
+workflows:
+    version: 2.1
+    run_all:
+        jobs:
+            - provar/run_provar:
+                majorversion: 2.10.1
+                minorversion: '05'
+                url: download.provartesting.com
+                project_name: ProvarProject
+                build_file: build_circleci.xml
+                test_plan:  "Regression Plan"
+                environment: ""
+                email_target: michael.dailey@provartesting.com
+                name: "Execute Provar Tests"
