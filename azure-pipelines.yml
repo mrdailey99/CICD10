@@ -1,0 +1,55 @@
+name: $(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  - main
+
+pool:
+  vmImage: "ubuntu-latest"
+variables:
+  provar_major_version: latest
+  provar_build_version: latest
+  test_plan: Regression
+  browser: Chrome
+  environment: ''
+steps:
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '11'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+    displayName: "Configure JDK 11"
+
+  - bash: |
+      echo "Download Provar Libraries"
+      wget -nv https://download.provartesting.com/$(provar_major_version)/Provar_ANT_$(provar_build_version).zip
+      echo "Unzip Provar ANT Files"
+      unzip -q Provar_ANT_$(provar_build_version).zip -d $BUILD_SOURCESDIRECTORY/ProvarHome
+      export PROVAR_HOME=$BUILD_SOURCESDIRECTORY/ProvarHome
+      ## cp -r $BUILD_SOURCESDIRECTORY/ProvarProject/.licenses $PROVAR_HOME/.licenses
+      cd $PROVAR_HOME
+      ls -la
+    displayName: "Install & Configure Provar for running ProvarDX"
+
+  - bash: |
+      xvfb-run ant -f ANT/build_azure.xml 
+    displayName: "Run Provar Tests"
+
+  # Publish Test Results
+  - task: PublishTestResults@2
+    continueOnError: true
+    inputs:
+      testResultsFormat: "JUnit" # Options: JUnit, NUnit, VSTest, xUnit, cTest
+      testResultsFiles: "**/Results/*.xml"
+      #searchFolder: '$(System.DefaultWorkingDirectory)' # Optional
+      #mergeTestResults: false # Optional
+      failTaskOnFailedTests: true # Optional
+      testRunTitle: Provar Test Suite # Optional
+    displayName: "Publish JUnit Test Results"
+
+  # Publish (upload) a file or directory as a named artifact for the current run
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(System.DefaultWorkingDirectory)/ANT/Results'
+      artifact: 'Test Results'
+      publishLocation: 'pipeline'
+    displayName: "Publish Test Results Zip"
