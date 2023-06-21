@@ -14,7 +14,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-    provar_regression:
+    run_provar_tests:
       # The type of runner that the job will run on
       runs-on: ubuntu-latest
       environment: Production
@@ -49,6 +49,7 @@ jobs:
 
         - name: Upload Test Results Folder
           uses: actions/upload-artifact@v3
+          if: success() || failure()
           with:
             # Artifact name
             name: TestResults # optional, default is artifact
@@ -59,7 +60,7 @@ jobs:
             retention-days: 14 # optional
     test_results:
       name: "Publish Test Results"
-      needs: provar_regression
+      needs: run_provar_tests
       runs-on: ubuntu-latest
       # the linux_regression job might be skipped, we don't need to run this job then
       if: success() || failure()
