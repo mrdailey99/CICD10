@@ -7,7 +7,7 @@ name: Run Provar Tests in Parallel
 on:
   workflow_dispatch:
   repository_dispatch:
-    event_types: [main]
+    types: [provar]
   push:
     branches:
       - 'main'
@@ -24,7 +24,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - name: Run build
         env:
           test_plan: ${{matrix.Plan}}
           provar_major_version: latest
