@@ -1,35 +1,37 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Run Provar Tests in Parallel
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
   workflow_dispatch:
-
+  repository_dispatch:
+    types: [provar]
+  push:
+    branches:
+      - 'github-actions'
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-   
   # This workflow contains a single job called "run_provar_tests"
   run_provar_tests:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        Plan: [Regression,Smoke]
-    
+        Plan: [Regression,Smoke] 
+    env:
+      provar_major_version: latest
+      provar_build_version: latest
+      provar_home: ${{ github.workspace }}/ProvarHome
+      test_environment: ''
+      provar_secrets_password: ${{ secrets.PROVAR_SECRETS_PASSWORD}}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v3
-    - name: Run build
-      env:
-        test_plan: ${{matrix.Plan}}
-        provar_major_version: latest
-        provar_build_version: latest
-        provar_home: ${{ github.workspace }}/ProvarHome
-        test_environment: ''
-        provar_secrets_password: ${{ secrets.PROVAR_SECRETS_PASSWORD}}
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+        env:
+          test_plan: ${{matrix.Plan}}
       - uses: actions/setup-java@v3
         with:
           java-version: '11'
@@ -44,13 +46,16 @@ jobs:
           echo "Unzip Provar ANT Files"
           unzip -q Provar_ANT_${{ env.provar_build_version }}.zip -d $GITHUB_WORKSPACE/ProvarHome
           ls -la ${{ env.provar_home }}
+          ls -la ${{ env.provar_home }}/ant
+          ls -la ${{ env.provar_home }}/lib
 
       - name: Run Provar Tests
-        run: xvfb-run ant -f ANT/build_github.xml
-        
+        run: |
+          ls -la ${{ env.provar_home }}
+          xvfb-run ant -f ANT/build_github.xml
+
       - name: Upload Test Results Folder
         uses: actions/upload-artifact@v3
-        if: success() || failure()
         with:
           # Artifact name
           name: TestResults # optional, default is artifact
@@ -59,26 +64,26 @@ jobs:
           # The desired behavior if no files are found using the provided path.
           if-no-files-found: error
           retention-days: 14 # optional
-    test_results:
-      name: "Publish Test Results"
-      needs: run_provar_tests
-      runs-on: ubuntu-latest
-      # the linux_regression job might be skipped, we don't need to run this job then
-      if: success() || failure()
-      steps:
-        - name: Download Artifacts
-          uses: actions/download-artifact@v3
-          with:
-            path: artifacts
+  test_results:
+    name: "Publish Test Results"
+    needs: run_provar_tests
+    runs-on: ubuntu-latest
+    # the linux_regression job might be skipped, we don't need to run this job then
+    if: success() || failure()
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
 
-        - name: Publish JUnit Test Results
-          uses: EnricoMi/publish-unit-test-result-action@v2
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            check_name: "Provar Regression Test Report"
-            # File pattern of test result files
-            files: '**/Results/*.xml'
-            # Individual runs of the same test may see different failures. Reports all individual failures when set "true" or the first only otherwise
-            report_individual_runs: true
-            # De-duplicates classes with same name by their file name when set "true", combines test results for those classes otherwise
-            deduplicate_classes_by_file_name: false
+      - name: Publish JUnit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "Provar Regression Test Report"
+          # File pattern of test result files
+          files: '**/Results/*.xml'
+          # Individual runs of the same test may see different failures. Reports all individual failures when set "true" or the first only otherwise
+          report_individual_runs: true
+          # De-duplicates classes with same name by their file name when set "true", combines test results for those classes otherwise
+          deduplicate_classes_by_file_name: false

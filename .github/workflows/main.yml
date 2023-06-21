@@ -1,16 +1,16 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Regression
+name: Run Provar Test Plans
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the main branch
 on:
   workflow_dispatch:
   repository_dispatch:
-    event_types: [main]
+    types: [provar]
   push:
     branches:
-      - 'main'
+      - 'github-actions'
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
