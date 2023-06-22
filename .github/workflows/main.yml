@@ -22,9 +22,10 @@ jobs:
         provar_major_version: latest
         provar_build_version: latest
         provar_home: ${{ github.workspace }}/ProvarHome
-        test_environment: ''
-        provar_secrets_password: ${{ secrets.PROVAR_SECRETS_PASSWORD}}
+        test_environment: 'DEV'
         test_plan: Regression
+        provar_secrets_password: ${{ secrets.PROVAR_SECRETS_PASSWORD }}
+
       # Steps represent a sequence of tasks that will be executed as part of the job
       steps:
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
