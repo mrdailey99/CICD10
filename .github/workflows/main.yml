@@ -22,7 +22,7 @@ jobs:
         provar_major_version: latest
         provar_build_version: latest
         provar_home: ${{ github.workspace }}/ProvarHome
-        test_environment: 'DEV'
+        test_environment: ''
         test_plan: Regression
         provar_secrets_password: ${{ secrets.PROVAR_SECRETS_PASSWORD }}
 

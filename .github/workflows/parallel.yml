@@ -30,8 +30,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-        env:
-          test_plan: ${{matrix.Plan}}
       - uses: actions/setup-java@v3
         with:
           java-version: '11'
@@ -50,8 +48,10 @@ jobs:
           ls -la ${{ env.provar_home }}/lib
 
       - name: Run Provar Tests
+        env:
+          test_plan: ${{matrix.Plan}}
         run: |
-          ls -la ${{ env.provar_home }}
+          echo "Running Test Plan: '${{ env.test_plan }}'"
           xvfb-run ant -f ANT/build_github.xml
 
       - name: Upload Test Results Folder
