@@ -3,7 +3,7 @@
 	<property name="provar.home" value="${env.GITHUB_WORKSPACE}/ProvarHome"/>
 	<property name="testproject.home" value="${env.GITHUB_WORKSPACE}"/>
 	<property name="testproject.results" value="${testproject.home}/ANT/Results"/>
-	<property name="secrets.password" value="${env.ProvarSecretsPassword}"/>
+	<property name="secrets.password" value="${env.provar_secrets_password}"/>
 	<property name="testenvironment.secretspassword" value="${env.ProvarSecretsPassword_EnvName}"/>
 
 	<taskdef name="Provar-Compile" classname="com.provar.testrunner.ant.CompileTask" classpath="${provar.home}/ant/ant-provar.jar"/>
