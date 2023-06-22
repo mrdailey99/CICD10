@@ -1,10 +1,10 @@
 <project default="runtests">
 	<property environment="env"/>
-	<property name="provar.home" value="${env.GITHUB_WORKSPACE}/ProvarHome"/>
+	<property name="provar.home" value="${env.provar_home}"/>
 	<property name="testproject.home" value="${env.GITHUB_WORKSPACE}"/>
 	<property name="testproject.results" value="${testproject.home}/ANT/Results"/>
 	<property name="secrets.password" value="${env.provar_secrets_password}"/>
-	<property name="testenvironment.secretspassword" value="${env.ProvarSecretsPassword_EnvName}"/>
+	<property name="testenvironment.secretspassword" value="${env.provar_secrets_password_envname}"/>
 
 	<taskdef name="Provar-Compile" classname="com.provar.testrunner.ant.CompileTask" classpath="${provar.home}/ant/ant-provar.jar"/>
 	<taskdef name="Run-Test-Case" classname="com.provar.testrunner.ant.RunnerTask" classpath="${provar.home}/ant/ant-provar.jar;${provar.home}/ant/ant-provar-bundled.jar;${provar.home}/ant/ant-provar-sf.jar"/>
@@ -17,7 +17,7 @@
 				projectPath="${testproject.home}" 
 				resultsPath="${testproject.results}" 
 				resultsPathDisposition="Replace" 
-				testEnvironment="${env.TEST_ENVIRONMENT}" 
+				testEnvironment="${env.test_environment}" 
 				webBrowser="Chrome" 
 				webBrowserConfiguration="Full Screen"
 				webBrowserProviderName="Desktop"
@@ -31,7 +31,7 @@
 				secretsPassword="${secrets.password}"
 				testEnvironmentSecretsPassword="${testenvironment.secretspassword}"
 		>
-			<fileset id="testplan" dir="${testproject.home}/plans/${env.TEST_PLAN}"></fileset>
+			<fileset id="testplan" dir="${testproject.home}/plans/${env.test_plan}"></fileset>
 			<planFeature name="PDF" type="OUTPUT" enabled="true"/>
 			<planFeature name="PIECHART" type="OUTPUT" enabled="true"/>
 			<planFeature name="EMAIL" type="NOTIFICATION" enabled="false"/>
