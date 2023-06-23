@@ -44,6 +44,9 @@ jobs:
             echo "Unzip Provar ANT Files"
             unzip -q Provar_ANT_${{ env.provar_build_version }}.zip -d $GITHUB_WORKSPACE/ProvarHome
             ls -la ${{ env.provar_home }}
+            # ERROR IN 2.10.1.05 
+            rm ${{ env.provar_home }}/lib/com.sun.jna.platform_5.8.0.jar
+            rm ${{ env.provar_home }}/lib/com.sun.jna_5.8.0.jar
 
         - name: Run Provar Tests
           run: xvfb-run ant -f ANT/build_github.xml
