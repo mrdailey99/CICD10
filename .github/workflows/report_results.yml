@@ -2,7 +2,7 @@ name: Test Results
 
 on:
   workflow_run:
-    workflows: ["Run Provar Test Plans"]
+    workflows: ["Run Provar Test Plans", "Run Provar Tests in Parallel"]
     types:
       - completed
 permissions: {}
